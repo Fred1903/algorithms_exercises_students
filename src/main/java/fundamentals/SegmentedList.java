@@ -65,26 +65,45 @@ public interface SegmentedList<T> extends Iterable<T> {
 }
 
 class SegmentedListImpl<T> implements SegmentedList<T> {
-
     // TODO: Implement the SegmentedList interface here
-
+    private List<List<T>> segments = new LinkedList<>();
+    private int nOp = 0;
 
     // Add a new segment (list) to the SegmentedList.
     public void addSegment(List<T> segment) {
+        nOp++; //on va augmenter nOp car on veut pas qu'il y ait un add pendant qu'on parcourt avec iterator
+        segments.add(segment);
     }
 
     // Remove a segment by its index.
     public void removeSegment(int index) {
+        if(index >= 0 && index < segments.size()) {
+            segments.remove(index);
+        }
+        else{
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     // Get the total size of the segmented list (across all segments).
     public int size() {
-         return -1;
+        int totalSizeSegmentedList = 0;
+        for(List<T> segment : segments){
+            totalSizeSegmentedList+=segment.size();
+        };
+        return totalSizeSegmentedList;
     }
 
     // Retrieve an element at a global index (spanning all segments).
     public T get(int globalIndex) {
-         return null;
+        int count=0;
+        for (List<T> segment : segments) {
+            if(globalIndex<count + segment.size()){
+                return segment.get(globalIndex - count);
+            }
+            count += segment.size();
+        }
+        throw new IndexOutOfBoundsException("Index out of bounds.");
     }
 
 
@@ -92,8 +111,40 @@ class SegmentedListImpl<T> implements SegmentedList<T> {
     // Return an iterator for the segmented list.
     @Override
     public Iterator<T> iterator() {
-         return null;
+         return new SegmentedListIterator();
     }
 
 
+    private class SegmentedListIterator implements Iterator<T> {
+        private int segmentIndex = 0; // Current segment we are traversing
+        private int elementIndex = 0; // Current element within the segment
+
+        private int t = nOp; //on save valeur de nOp avant d'itérer pr pouvoir verif que c la meme
+
+        @Override
+        public boolean hasNext() {
+            if(t!=nOp){
+                throw new ConcurrentModificationException("Concurrent Modification");
+            }
+            while(segmentIndex<segments.size()){
+                if(elementIndex<segments.get(segmentIndex).size()){
+                    return true;
+                }
+                segmentIndex++;
+                elementIndex=0;
+            }
+            return false;
+        }
+
+        @Override
+        public T next() {
+            if(t!=nOp){
+                throw new ConcurrentModificationException("Concurrent Modification");
+            }
+            if(!hasNext()){
+                throw new NoSuchElementException("No element left");
+            }
+            return segments.get(segmentIndex).get(elementIndex++);
+        }
+    }
 }

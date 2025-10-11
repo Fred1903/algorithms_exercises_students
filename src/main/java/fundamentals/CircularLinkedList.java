@@ -39,16 +39,21 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
 
     public CircularLinkedList() {
         // TODO initialize instance variables
+        //1er noeud est un noeud sentinelle, sa valeur sera tjrs vide !
+        n=1; //en mettant dans l'init un élément vide, cela permet que plus tard dans le code faudra
+        last=new Node();//pas vérifier si la liste est vide, elle est tjrs remplie !!!
+        last.next=last;
+        //on peut remarquer que le noeud last est le noeud sentinelle, donc le 1er vrai noeud sera last.next
     }
 
     public boolean isEmpty() {
         // TODO
-         return false;
+        return n==1;
     }
 
     public int size() {
         // TODO
-         return -1;
+        return n-1;
     }
 
     private long nOp() {
@@ -63,7 +68,22 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
      */
     public void enqueue(Item item) {
         // TODO
+        /*nOp++;     -->cette version pourrait être valide si on avait pas un noeud sentinelle
+        Node newLastNode = new Node();
+        newLastNode.item = item;
+        Node firstNode = last.next;
+        last.next = newLastNode;
+        last = newLastNode;
+        newLastNode.next = firstNode;
+        n++;*/
 
+        nOp++;
+        Node oldLastNode = last;
+        last = new Node();
+        last.item = item;
+        last.next = oldLastNode.next;
+        oldLastNode.next = last;
+        n++;
     }
 
     /**
@@ -72,7 +92,20 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
      * Returns the element that was removed from the list.
      */
     public Item remove(int index) {
-         return null;
+        nOp++;
+        if(index<0 || index>=size()){
+            throw new IndexOutOfBoundsException();
+        }
+        Node previousNode =last.next; //donc 1er node
+        for (int i = 0; i < index; i++) { //index = 4 ; 0-1-2-3-4 donc 5ieme elem
+            previousNode = previousNode.next; //a la fin i=4, prev=prev.next donc, prev=au noeud actuel
+        }
+        if(previousNode.next==last)last= previousNode; //si le node qu on veut supp est le dernier, last=node precedent
+        Item itemToRemove = previousNode.next.item; //ns on veut item de i=5, donc prev.next.item
+        previousNode.next = previousNode.next.next; //ensuite on supp le lien, ducp prev.next=next.next
+        n--;
+
+        return itemToRemove;
     }
 
 
@@ -96,16 +129,29 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
     private class ListIterator implements Iterator<Item> {
 
         // TODO You probably need a constructor here and some instance variables
+        private long nOp;
+        private Node currentNode;
 
+        ListIterator() {
+            nOp=nOp();
+            currentNode=last.next.next; //pq last.next.next ?
+            //car le 1er noeud est un noeud sentinelle, on ne l'utilise pas il est vide, sert juste
+            //a nous faciliter le codage et eviter toutes les verifications...
+        }
 
         @Override
         public boolean hasNext() {
-             return false;
+            return currentNode!=last.next;
         }
 
         @Override
         public Item next() {
-             return null;
+            if (nOp() != nOp) throw new ConcurrentModificationException();
+            if (!hasNext()) throw new NoSuchElementException();
+
+            Item currentItem = currentNode.item;
+            currentNode = currentNode.next;
+            return currentItem;
         }
 
     }
