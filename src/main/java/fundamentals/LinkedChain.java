@@ -41,6 +41,17 @@ public class LinkedChain implements Iterable<Integer> {
      */
     public LinkedChain(int n) {
         // TODO
+        if(n<1)throw new IllegalArgumentException();
+
+        predecessor = new int[n];
+        successor = new int[n];
+
+        for (int i = 0; i <= n-1; i++) {//qd un élément n'est pas dans la liste, pred[i]=suc[i]=i
+            predecessor[i]=i;
+            successor[i]=i;
+        }
+        successor[0]=n-1;
+        predecessor[n-1]=0;
     }
 
 
@@ -53,8 +64,26 @@ public class LinkedChain implements Iterable<Integer> {
      *         or if "b" is already in the chain or if "a" is the last
      *         or if "a" or "b" are not in the range [0, n-1]
      */
+
+    //Quand a n'est pas dans la chaine, successor[a]=a=predecessor[a]. Néanmoins si on insère a après un autre élément,
+    //predecessor[a]=qql chose, et successor[a]=successor[qqlchose], successor[qqlchose]=a
     public void insertAfter(int a, int b) {
         // TODO
+        int n = predecessor.length;
+        // VÉRIFIER LES BORNES D'ABORD ! -->pas opti ici
+        if (a < 0 || a >= n || b < 0 || b >= n) {
+            throw new IllegalArgumentException();
+        }
+        if(successor[a]!=a && successor[b]==b && a>=0 && a<n-1 && b>0 && b<n-1){
+            int c= successor[a];
+            successor[b]=c;
+            predecessor[b]=a;
+            successor[a]=b;
+            predecessor[c]=b;
+        }
+        else{
+            throw new IllegalArgumentException();
+        }
     }
 
 
@@ -69,6 +98,23 @@ public class LinkedChain implements Iterable<Integer> {
      */
     public void insertBefore(int a, int b) {
         // TODO
+        int n = predecessor.length;
+
+        // VÉRIFIER LES BORNES D'ABORD !
+        if (a < 0 || a >= n || b < 0 || b >= n) {
+            throw new IllegalArgumentException();
+        }
+
+        if(predecessor[a]!=a && successor[b]==b && a>0 && a<=n-1 && b>0 && b<n-1){
+            int c = predecessor[a];
+            predecessor[b]=c;
+            successor[b]=a;
+            predecessor[a]=b;
+            successor[c]=b;
+        }
+        else{
+            throw new IllegalArgumentException();
+        }
     }
 
 
@@ -81,7 +127,25 @@ public class LinkedChain implements Iterable<Integer> {
     @Override
     public Iterator<Integer> iterator() {
         // TODO
-         return null;
+        return new Iterator<Integer>() {
+            int current=0;
+            @Override
+            public boolean hasNext() {
+                return current!=-1;
+            }
+
+            @Override
+            public Integer next() {
+                if(!hasNext()) throw new NoSuchElementException();
+                int value = current;
+                if (current == successor.length - 1) {
+                    current = -1; // plus d’élément à donner
+                } else {
+                    current = successor[current];
+                }
+                return value;
+            }
+        };
     }
 
 }
