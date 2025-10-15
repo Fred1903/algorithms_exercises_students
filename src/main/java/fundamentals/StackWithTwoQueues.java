@@ -26,7 +26,7 @@ public class StackWithTwoQueues<E> {
      * @return true if the queue contains no elements, false otherwise
      */
     public boolean empty() {
-         return false;
+        return queue1.isEmpty();
     }
 
     /**
@@ -35,7 +35,8 @@ public class StackWithTwoQueues<E> {
      * @throws EmptyStackException if the stack is empty
      */
     public E peek() throws EmptyStackException {
-         return null;
+        if(empty()) throw new EmptyStackException();
+        return queue1.peek();
     }
 
     /**
@@ -44,7 +45,8 @@ public class StackWithTwoQueues<E> {
      * @throws EmptyStackException if the stack is empty
      */
     public E pop() throws EmptyStackException {
-         return null;
+        if(empty()) throw new EmptyStackException();
+        return queue1.poll();
     }
 
     /**
@@ -53,6 +55,15 @@ public class StackWithTwoQueues<E> {
      * @param item the item to add
      */
     public void push(E item) {
+        // Ajouter l’élément dans queue2
+        queue2.add(item);
+        // Puis transférer tout le contenu de queue1 dans queue2
+        while (!queue1.isEmpty()) {
+            queue2.add(queue1.poll());
+        }
+        // Inverser les rôles
+    Queue<E> temporaryQueue = queue1;
+        queue1 = queue2;
+        queue2 = temporaryQueue;
     }
-
 }
