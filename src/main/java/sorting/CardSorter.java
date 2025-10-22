@@ -30,6 +30,18 @@ public class CardSorter {
             //they are in the increasing order.
 
             // TODO
+            if(list.isSorted())break;
+            for (int i = 0; i < list.getSize()-1-iter; i++) {
+                if(list.getFirst()>list.getSecond()){
+                    list.swap();
+                }
+                list.pop();
+                System.out.println("liste qd iter=: "+iter+" et i="+i+" :"+list.toString());
+            }
+            for (int i = 0; i <= iter; i++) {
+                list.pop();
+                System.out.println("liste qd iter=: "+iter+" et i pop="+i+" :"+list.toString());
+            }
 
         }
         // here, if you followed the invariant proposed above, the list should be sorted!
