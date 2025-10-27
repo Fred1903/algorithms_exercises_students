@@ -1,5 +1,7 @@
 package sorting;
 
+import java.util.*;
+
 /**
  * Author Pierre Schaus
  *
@@ -106,7 +108,33 @@ public class Median {
      */
     public static int median(Vector vec, int lo, int hi) {
         // TODO
-         return -1;
+        int k = lo + (hi - lo) / 2;
+
+        while (lo <= hi) {
+            int p = partition(vec, lo, hi); // place le pivot à sa position finale
+            if (p == k) {
+                return vec.get(p);          // valeur médiane trouvée
+            } else if (p > k) {
+                hi = p - 1;                 // chercher à gauche
+            } else {
+                lo = p + 1;                 // chercher à droite
+            }
+        }
+        // sécurité (ne devrait pas arriver)
+        return vec.get(k);
     }
 
+    public static int partition(Vector a, int lo, int hi){
+        int i = lo;
+        int j = hi+1;
+        int v = a.get(lo);
+        while (true) {
+            while (a.get(++i) < v) if (i == hi) break;
+            while (v < a.get(--j)) if (j == lo) break;
+            if (i >= j) break;
+            a.swap(i,j);
+        }
+        a.swap(lo,j);
+        return j;
+    }
 }

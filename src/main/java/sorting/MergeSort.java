@@ -12,6 +12,8 @@ package sorting;
  *       non recursively, using a loop instead.
  */
 public class MergeSort {
+    private static Comparable[] aux;
+
     /**
      * Pre-conditions: a[lo..mid] and a[mid+1..hi] are sorted
      * Post-conditions: a[lo..hi] is sorted
@@ -39,6 +41,11 @@ public class MergeSort {
     // Mergesort a[lo..hi] using auxiliary array aux[lo..hi]
     private static void sort(Comparable[] a, Comparable[] aux, int lo, int hi) {
         // TODO
+        if(hi<=lo)return;
+        int mid = lo+ (hi-lo)/2;
+        sort(a, aux, lo, mid);
+        sort(a, aux, mid+1, hi);
+        merge(a,aux,lo, mid, hi);
     }
 
     /**
@@ -46,6 +53,8 @@ public class MergeSort {
      */
     public static void sort(Comparable[] a) {
         // TODO
+        aux= new Comparable[a.length];
+        sort(a, aux, 0, a.length-1);
     }
 }
 
