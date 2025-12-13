@@ -56,6 +56,20 @@ public class IncrementalHash {
         //  The RM values computed above might help you as well in the computation.
         //  Hint2: Modulo operator is distributive (A + B) % Q = (A % Q + B % Q) % Q (property exploited by Horners's method)
         //  Hint3: To compute B % Q if you have x = (A + B) % Q, you should do (x + Q - A % Q) % Q
-         return 0;
+
+        int out = t[from-1];
+        int in = t[from+M-1];
+        //1. Enlever le char sortant
+        int hash= (previousHash-out*RM)%Q;
+        if(hash<0)hash+=Q;
+
+        //2. Roll : faire glisser
+        hash = (hash*R) %Q ;
+        //3. ajout du char entrant
+        hash = (hash+in)%Q;
+
+        //%Q a chaque étape car on veut éviter un overflow, mais comme dit hint 2 modQ tout en un, ou plusieurs étapes revient au meme
+
+        return hash;
     }
 }

@@ -99,7 +99,13 @@ public class BinarySearchTreeHigher<Key extends Comparable<Key>, Value> {
      * @return the minimum key, null if the tree is empty
      */
     public Key minKey() {
-         return null;
+        if(isEmpty())return null;
+
+        Node currentNode = root;
+        while (currentNode.left!=null){
+            currentNode=currentNode.left;
+        }
+        return currentNode.key;
     }
 
 
@@ -112,11 +118,18 @@ public class BinarySearchTreeHigher<Key extends Comparable<Key>, Value> {
      * @return the least key greater than key, or null if there is no such key
      */
     public Key higherKey(Key key) {
-         return null;
+        if(isEmpty())return null;
+        return higherKey(root,key);
     }
 
     private Key higherKey(Node x, Key key) {
-         return null;
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        //si la key est plus grande on va regarder vers la droite pr trv un noeud avec plus grande key
+        if (cmp >= 0) return higherKey(x.right, key);
+        //else key < x.key
+        Key left = higherKey(x.left, key);//on regarde si ya une key encore plus petite
+        if (left == null) return x.key; //si ya plus de plus petit on retourne le noeud courant
+        else return left; //sinon left
     }
-
 }

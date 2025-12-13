@@ -40,6 +40,23 @@ public class BinaryHeap {
      * @param value the added value
      */
     public void push(int value) {
+        if(size==content.length-1)increaseSize();
+        content[++size]=value;
+        checkIfSwap(size);
+    }
+
+    private void checkIfSwap(int index) {
+        if(index!=1 && checkIfSmallerThanParent(index)){
+            int value = content[index];
+            content[index]=content[index/2];
+            content[index/2]=value;
+            index=index/2;
+            checkIfSwap(index);
+        }
+    }
+
+    private boolean checkIfSmallerThanParent(int index) {
+        return (content[index]<content[index/2]) ;
     }
 
     /**

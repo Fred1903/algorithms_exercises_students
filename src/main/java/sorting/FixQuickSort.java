@@ -29,15 +29,26 @@ public class FixQuickSort {
     // quicksort the subarray from a[lo] to a[hi]
     private static void sort(int[] a, int lo, int hi) {
         if (hi <= lo) return;
-        int j = partition(a, lo, hi);
-        sort(a, lo, j-1);
-        sort(a, j+1, hi);
-        assert isSorted(a, lo, hi);
+
+        int lt = lo;
+        int i = lo + 1;
+        int gt = hi;
+        int pivot = a[lo];
+
+        while (i <= gt) {
+            if (a[i] < pivot) exch(a, lt++, i++);
+            else if (a[i] > pivot) exch(a, i, gt--);
+            else i++;
+        }
+
+        //recursively sort the parts that are < pivot and > pivot
+        sort(a, lo, lt - 1);
+        sort(a, gt + 1, hi);
     }
 
     // partition the subarray a[lo..hi] so that a[lo..j-1] <= a[j] <= a[j+1..hi]
     // and return the index j.
-    private static int partition(int[] a, int lo, int hi) {
+    /*private static int partition(int[] a, int lo, int hi) {
         int i = lo;
         int j = hi + 1;
         int v = a[lo];
@@ -58,7 +69,7 @@ public class FixQuickSort {
         exch(a, lo, j);
         // now, a[lo .. j-1] <= a[j] <= a[j+1 .. hi]
         return j;
-    }
+    }*/
 
 
 

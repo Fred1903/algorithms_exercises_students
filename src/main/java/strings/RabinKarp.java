@@ -29,8 +29,8 @@ import java.util.Hashtable;
 public class RabinKarp {
 
 
-     private String pat; // pattern (only needed for Las Vegas)
-     private long patHash; // pattern hash value
+    private String[] pat; // pattern (only needed for Las Vegas)
+    private long[] patHashes; // pattern hash value
 
 
     private int M; // pattern length
@@ -39,14 +39,18 @@ public class RabinKarp {
     private long RM; // R^(M-1) % Q
 
     public RabinKarp(String[] pat) {
-         this.pat = pat[0]; // save pattern (only needed for Las Vegas)
-         this.M = this.pat.length();
-        Q = 4463;
-        RM = 1;
+         this.pat = pat; // save pattern (only needed for Las Vegas)
+         this.M = this.pat[0].length(); //les mots ont tous la même longueur donc je peux prendre la long du premier
+         Q = 4463;
+         RM = 1;
 
-        for (int i = 1; i <= M - 1; i++) // Compute R^(M-1) % Q for use
+         for (int i = 1; i <= M - 1; i++) // Compute R^(M-1) % Q for use
             RM = (R * RM) % Q; // in removing leading digit.
 
+        patHashes=new long[pat.length];
+        for(int i=0; i<=patHashes.length;i++){
+            patHashes[i]=hash(pat[i],M);
+        }
     }
 
      public boolean check(int i) // Monte Carlo (See text.)
@@ -60,18 +64,26 @@ public class RabinKarp {
         return h;
     }
 
+    private boolean matchesAny(String txt, int pos, long txtHash){
+        for(int i=0; i<pat.length;i++){
+            if(txtHash==patHashes[i]){
+                if(txt.regionMatches(pos,pat[i],0,M))return true;
+            }
+        }
+        return false;
+    }
 
     public int search(String txt) { // Search for hash match in text.
-        int N = txt.length();
+       /* int N = txt.length();
         long txtHash = hash(txt, M);
 
-         if (patHash == txtHash) return 0; // Match at beginning.
+        if (patHashes.containsValue(txtHash)) return 0; // Match at beginning.
         for (int i = M; i < N; i++) { // Remove leading digit, add trailing digit, check for match.
             txtHash = (txtHash + Q - RM * txt.charAt(i - M) % Q) % Q;
             txtHash = (txtHash * R + txt.charAt(i)) % Q;
-             if (patHash == txtHash)
+             if (patHashes == txtHash)
                 if (check(i - M + 1)) return i - M + 1; // match
-        }
-        return N; // no match found
+        }*/
+        return 0;//<N; // no match found
     }
 }

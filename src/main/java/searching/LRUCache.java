@@ -1,5 +1,8 @@
 package searching;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 /**
  * We are interested in the implementation of an LRU cache,
  * i.e. a (hash)-map of limited capacity where the addition of
@@ -56,17 +59,110 @@ package searching;
 public class LRUCache<K,V> {
 
     private int capacity;
+    private HashMap<K,Node> map;
+    private LinkedList<Node> linkedList;
+
+    private class Node{
+        Node previousNode;
+        Node nextNode;
+        V value;
+
+        public Node(V value){
+            this.value= value;
+        }
+    }
 
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
+        map=new HashMap<>();
+        linkedList=new LinkedList<>();
     }
 
+    //le noeud devient le plus récent !!!
     public V get(K key) {
-         return null;
+        if(!map.containsKey(key)) return null;
+        Node node = map.get(key);
+        if(linkedList.size()>0){
+            if(linkedList.size()>1){
+                Node previousNode = node.previousNode;
+                Node nextNode = node.nextNode;
+                previousNode.nextNode=nextNode;
+                nextNode.previousNode=previousNode;
+            }
+            Node lastNode = linkedList.getLast();
+            lastNode.nextNode=node;
+            node.previousNode=lastNode;
+        }
+        return node.value;
     }
 
     public void put(K key, V value) {
+
+        Node newNode = new Node(value);
+        map.put(key,newNode);
+
+        if(linkedList.size()==capacity){
+            linkedList.pop();
+            map.remove(key);
+        }
+        if(linkedList.size()>0){
+            Node prevNode = linkedList.getLast();
+            prevNode.nextNode = newNode;
+            newNode.previousNode=prevNode;
+        }
+        linkedList.add(newNode);
+    }
+
+    public static void main(String[] args) {
+        LRUCache<String, Integer> cache = new LRUCache<>(3);
+
+        System.out.println("----- STEP 0: put(A,7) -----");
+        cache.put("A",7);
+        debug(cache);
+
+        System.out.println("----- STEP 1: put(B,10) -----");
+        cache.put("B",10);
+        debug(cache);
+
+        System.out.println("----- STEP 2: put(C,5) -----");
+        cache.put("C",5);
+        debug(cache);
+
+        System.out.println("----- STEP 3: put(D,8) (A should be removed) -----");
+        cache.put("D",8);
+        debug(cache);
+
+        System.out.println("----- STEP 4: get(B) -----");
+        System.out.println("get(B) = " + cache.get("B"));
+        debug(cache);
+
+        System.out.println("----- STEP 5: put(E,9) -----");
+        cache.put("E",9);
+        debug(cache);
+
+        System.out.println("----- STEP 6: put(D,3) -----");
+        cache.put("D",3);
+        debug(cache);
+
+        System.out.println("----- STEP 7: get(B) -----");
+        System.out.println("get(B) = " + cache.get("B"));
+        debug(cache);
+
+        System.out.println("----- STEP 8: put(A,2) -----");
+        cache.put("A",2);
+        debug(cache);
+    }
+
+    // Fonction pour afficher le contenu interne du LRU
+    private static void debug(LRUCache<String, Integer> cache) {
+        System.out.println("Map size: " + cache.map.size());
+        System.out.print("List: [");
+
+        for (LRUCache<String,Integer>.Node n : cache.linkedList) {
+            System.out.print(n.value + " ");
+        }
+        System.out.println("]\n");
     }
 
 }

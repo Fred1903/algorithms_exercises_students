@@ -1,9 +1,7 @@
 package searching;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.time.LocalDate;
+import java.util.*;
 
 
 /**
@@ -25,9 +23,12 @@ import java.util.TreeMap;
  */
 class BirthdayMap {
     // Hint: feel free to use existing java classes from Java such as java.util.TreeMap
+    TreeMap<LocalDate,List<Person>> birthdayTreeMap;
+
 
     BirthdayMap() {
         // TODO
+        birthdayTreeMap=new TreeMap<LocalDate,List<Person>>();
     }
 
     /**
@@ -39,6 +40,29 @@ class BirthdayMap {
      */
     void addPerson(Person person) {
         // TODO
+        if(person==null || person.birthday==null || person.name==null)return;
+
+        List<Person> personsWithThisBirthday;
+        LocalDate birthday = setStringDatetoDateType(person.birthday);
+
+        if(birthdayTreeMap.containsKey(birthday)){
+            personsWithThisBirthday=birthdayTreeMap.get(birthday);
+            personsWithThisBirthday.add(person);
+        }
+        else{
+            personsWithThisBirthday= new ArrayList<Person>();
+            personsWithThisBirthday.add(person);
+            //Uniquement valable si les entrées des dates se font sous le format "YYYY-MM-DD"
+            birthdayTreeMap.put(birthday, personsWithThisBirthday);
+        }
+    }
+
+    LocalDate setStringDatetoDateType(String date){
+        int year = Integer.parseInt(date.substring(0,4));//de 0 compris a 4 non compris
+        int month = Integer.parseInt(date.substring(5,7));
+        int day = Integer.parseInt(date.substring(8,10));
+
+        return LocalDate.of(year,month,day);
     }
 
     /**
@@ -50,7 +74,9 @@ class BirthdayMap {
      */
     List<Person> getPeopleBornOnDate(String date) {
         // TODO
-         return null;
+        List<Person> personsWithThisBirthday = birthdayTreeMap.get(setStringDatetoDateType(date));
+        if (personsWithThisBirthday == null) return new ArrayList<>();
+        return personsWithThisBirthday;
     }
 
 
@@ -64,7 +90,23 @@ class BirthdayMap {
      */
     List<Person> getPeopleBornInYear(String year) {
         // TODO
-         return null;
+
+        int y = Integer.parseInt(year);
+        //début et fin de l’année
+        LocalDate startOfYear = LocalDate.of(y, 1, 1);
+        LocalDate endOfYear = LocalDate.of(y, 12, 31);
+
+        //sub-map des dates dans l’année
+        SortedMap<LocalDate, List<Person>> subMap =
+                birthdayTreeMap.subMap(startOfYear, true, endOfYear, true);
+
+        //toutes les personnes trouvées
+        List<Person> personsWithThisBirthdayYear = new ArrayList<>();
+        for (List<Person> list : subMap.values()) {
+            personsWithThisBirthdayYear.addAll(list);
+        }
+
+        return personsWithThisBirthdayYear;
     }
 
 

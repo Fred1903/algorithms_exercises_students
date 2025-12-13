@@ -1,16 +1,27 @@
 package graphs;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Implement the Digraph.java interface in
  * the Digraph.java class using an adjacency list
  * data structure to represent directed graphs.
  */
 public class Digraph {
-
+    private int V;
+    private int E;
+    private List<Integer>[] adj;
 
     public Digraph(int V) {
         // TODO
+        this.V=V;
+        this.E=0;
+        adj=(List<Integer>[]) new ArrayList[V];
+        for (int i = 0; i < V; i++) {
+            adj[i]=new ArrayList<>();
+        }
     }
 
     /**
@@ -18,7 +29,7 @@ public class Digraph {
      */
     public int V() {
         // TODO
-         return -1;
+         return V;
     }
 
     /**
@@ -26,7 +37,7 @@ public class Digraph {
      */
     public int E() {
         // TODO
-         return -1;
+         return E;
     }
 
     /**
@@ -34,6 +45,8 @@ public class Digraph {
      */
     public void addEdge(int v, int w) {
         // TODO
+        adj[v].add(w);
+        E++;
     }
 
     /**
@@ -42,7 +55,7 @@ public class Digraph {
      */
     public Iterable<Integer> adj(int v) {
         // TODO
-         return null;
+         return adj[v];
     }
 
     /**
@@ -50,7 +63,14 @@ public class Digraph {
      */
     public Digraph reverse() {
         // TODO
-         return null;
-    }
 
+        Digraph reverse = new Digraph(V);
+
+        for (int i = 0; i < V; i++) {
+            for(int w: adj[i]){
+                reverse.addEdge(w,i);
+            }
+        }
+        return reverse;
+    }
 }

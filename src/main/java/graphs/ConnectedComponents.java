@@ -27,7 +27,22 @@ public class ConnectedComponents {
      */
     public static int numberOfConnectedComponents(Graph g) {
         // TODO
-         return -1;
+        boolean[]marked = new boolean[g.V()];
+        int count=0;
+        for (int i = 0; i < marked.length; i++) {
+            if(!marked[i]){
+                dfs(g, i,marked);
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static void dfs(Graph g, int v, boolean[]marked) {
+        marked[v]=true;
+        for (int w: g.adj(v)){
+            if(!marked[w])dfs(g, w,marked);
+        }
     }
 
     static class Graph {

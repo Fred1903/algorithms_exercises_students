@@ -1,6 +1,11 @@
 package sorting;
 
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Author Pierre Schaus
  *
@@ -56,8 +61,43 @@ public class Union {
      */
     public static Interval[] union(Interval[] intervals) {
         // TODO
-         return new Interval[]{};
+        if(intervals.length==0||intervals.length==1)return intervals;
 
+        Arrays.sort(intervals);
+        List<Interval> unionOfIntervals = new ArrayList<Interval>();
+        int intervalMin=intervals[0].min;
+        int intervalMax=intervals[0].max;
+
+        for (int i = 1; i < intervals.length; i++) { //O(n)
+            if(intervals[i].min<=intervalMax){//si min de current<max du précédent on fusionne intervalles
+                intervalMax=Math.max(intervalMax, intervals[i].max);
+            }
+            else{
+                unionOfIntervals.add(new Interval(intervalMin,intervalMax));
+                //si on est plus dans l'intervalle précédente, min et max sont ceux de l'intervalle courante
+                intervalMin=intervals[i].min;
+                intervalMax=intervals[i].max;
+            }
+        }
+        unionOfIntervals.add(new Interval(intervalMin,intervalMax)); //la dernière intervalle en dehors de la boucle
+
+        /*for(Interval i : unionOfIntervals){
+            System.out.println(i);
+        }*/
+
+        return unionOfIntervals.toArray(new Interval[unionOfIntervals.size()]);
+    }
+
+    public static void main(String[] args) {
+        Interval i = new Interval(2,7);
+        Interval u = new Interval(3,8);
+        Interval v = new Interval(1,5);
+        Interval o = new Interval(9,10);
+        Interval l = new Interval(11,13);
+        Interval p = new Interval(12,17);
+
+        Interval[]intervals = {p,i,u,o,v,l};
+        Union.union(intervals);
     }
 
 }

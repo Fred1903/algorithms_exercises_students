@@ -1,6 +1,10 @@
 package graphs;
 
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * We are interested in solving a maze represented
  * by a matrix of integers 0-1 of size nxm.
@@ -24,9 +28,61 @@ package graphs;
  * between the origin and the destination.
  */
 public class Maze {
+    private final static int WALL=1;
+    private final static int FREE=0;
+
     public static Iterable<Integer> shortestPath(int[][] maze, int x1, int y1, int x2, int y2) {
         // TODO
-         return null;
+        if(maze[x1][y1]==WALL || maze[x2][y2]==WALL)return new ArrayList<>();
+
+        int n= maze.length;
+        int m= maze[0].length;
+
+        int start=ind(x1,y1,m);
+        int end = ind(x2,y2,m);
+
+        boolean[] marked=new boolean[n*m];
+        int[] edgeTo=new int[n*m];
+
+        Queue<Integer> queue = new LinkedList<>();
+
+        marked[start]=true;
+        queue.add(start);
+
+        int [][] directions = {{0,-1},{0,+1},{+1,0},{-1,0}};
+
+        while (!queue.isEmpty()){
+            int v = queue.poll();
+            int vx = row(v, m);
+            int vy = col(v, m);
+            for(int[] direction : directions){
+                int nx = vx + direction[0];
+                int ny = vy + direction[1];
+
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m)continue;
+                if (maze[nx][ny] == WALL)continue;
+                int w = ind(nx, ny, m);
+                if (marked[w])continue;
+                marked[w] = true;
+                edgeTo[w] = v;
+                queue.add(w);
+                if (w == end) {
+                    queue.clear();
+                    break;
+                }
+            }
+        }
+
+        if(!marked[end])return new ArrayList<>();
+
+        // Reconstruire le chemin de end -> start
+        LinkedList<Integer> path = new LinkedList<>();
+        for (int x = end; x != start; x = edgeTo[x]) {
+            path.addFirst(x);
+        }
+        path.addFirst(start);
+
+        return path;
     }
 
     public static int ind(int x, int y, int lg) {

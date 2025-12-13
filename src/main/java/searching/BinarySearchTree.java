@@ -1,5 +1,7 @@
 package searching;
 
+import java.util.NoSuchElementException;
+
 /**
  * You are given a binary search tree (BST) whose nodes implement the BinaryNode and KeyNode interfaces
  * available in the utils package.
@@ -34,7 +36,45 @@ public class BinarySearchTree {
      * @param value the value we want to ceil
      */
     public static Integer ceil(BSTNode<Integer> root, int value) {
-         return null;
+
+        Integer nodeKey = root.getKey();
+        BSTNode rightNode = root.getRight();
+        BSTNode leftNode = root.getLeft();
+        if (nodeKey<value) {
+            if(rightNode!=null){
+                return ceil(rightNode,value);
+            }
+            return null;
+        }
+        else if(nodeKey>value){
+            if(leftNode!=null){
+                Integer valueToReturn = ceil(root.getLeft(),value);
+                if(valueToReturn!=null)return valueToReturn;//si ya une valeur plus grande dans l'enfant on renvoie la valeur
+                //sinon on renvoie la valeur du noeud de base après
+            }
+        }
+        return nodeKey; //doit etre apl en dernier ! si root.key=value ou bien que root.left=null
+    }
+
+    public static void main(String[] args) {
+        BSTNode<Integer> root = new BSTNode<>(12);
+        root.setLeft(new BSTNode<>(8));
+        root.setRight(new BSTNode<>(18));
+
+        root.getLeft().setLeft(new BSTNode<>(3));
+        root.getLeft().setRight(new BSTNode<>(11));
+        root.getLeft().getRight().setLeft(new BSTNode<>(9));
+
+        root.getRight().setLeft(new BSTNode<>(14));
+        root.getRight().setRight(new BSTNode<>(20));
+        root.getRight().getLeft().setRight(new BSTNode<>(15));
+
+        // Tests
+        System.out.println("ceil(11) = " + ceil(root, 11)); // doit donner 11
+        System.out.println("ceil(4) = " + ceil(root, 4));   // doit donner 8
+        System.out.println("ceil(21) = " + ceil(root, 21)); // doit donner null
+        System.out.println("ceil(10) = " + ceil(root, 10)); // pour vérifier un cas intermédiaire
+        System.out.println("ceil(14) = " + ceil(root, 14)); // doit donner 14
     }
 
 

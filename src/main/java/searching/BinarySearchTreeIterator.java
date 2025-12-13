@@ -1,8 +1,6 @@
 package searching;
 
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * In this exercise, we are interested in implementing an iterator (BSTIterator) for a Binary Search Tree (BST).
@@ -97,21 +95,48 @@ public class BinarySearchTreeIterator<Key extends Comparable<Key>> implements It
     }
 
     private class BSTIterator implements Iterator<Key> {
-
+        private int size;
+        // Internal stack used to keep track of the ancestors of the current node
+        private Stack<BSTNode<Key>> stack;
 
         public BSTIterator() {
+            this.stack = new Stack<>();
+            BSTNode<Key> current = root;
+            while (current != null) {
+                this.stack.push(current);//on push tous les noeuds de gauches dans la stack (12,8,3)
+                current = current.getLeft();//on veut commencer à partir du plus petit noeud à gauche !
+            }
+            this.size = size();
         }
 
         @Override
         public boolean hasNext() {
 			// TODO
-			 return false;
+            if (this.size != size()) {//Pas de modification autorisé pendant le parcours!
+                throw new ConcurrentModificationException();
+            }
+            return !this.stack.isEmpty();
         }
 
         @Override
         public Key next() {
 			// TODO
-			 return null;
+            if (this.size != size()) {//Pas de modification autorisé pendant le parcours!
+                throw new ConcurrentModificationException();
+            }
+            if (!this.hasNext()) {
+                throw new NoSuchElementException();
+            }
+            BSTNode<Key> node = this.stack.pop();//enleve l'élément le plus petit
+            Key key = node.getKey();
+            if (node.getRight() != null) {//si ya un noeud à sa droite on y va
+                node = node.getRight();
+                while (node != null) {
+                    this.stack.push(node);//ce noeud ci devient le nouveau plus petit racine
+                    node = node.getLeft();//si ya un noeud a sa gauche on le prend comme plus petit noeud (While !)
+                }
+            }
+            return key;
         }
     }
 

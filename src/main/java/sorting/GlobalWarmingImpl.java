@@ -58,13 +58,25 @@ abstract class GlobalWarming {
 
 
 public class GlobalWarmingImpl extends GlobalWarming {
-
+    private int [] array1D;
 
     public GlobalWarmingImpl(int[][] altitude) {
         super(altitude);
         // TODO
         // expected pre-processing time in the constructror : O(n^2 log(n^2))
+        array1D = transform2DArrayInto1DArray(altitude);//n²
+        Arrays.sort(array1D);//O (n log n) -->mais n du tableau 1d, si on prend n de altitude ca fait O(n² log n²)
+    }
 
+    private int[] transform2DArrayInto1DArray(int[][] twoDimensionsArray) {
+        int [] newArray=new int[twoDimensionsArray.length*twoDimensionsArray[0].length];
+        int cpt=0;
+        for(int i=0; i<twoDimensionsArray[0].length;i++){
+            for(int j=0;j<twoDimensionsArray[1].length;j++){
+                newArray[cpt++]=twoDimensionsArray[i][j];
+            }
+        }
+        return newArray;
     }
 
     /**
@@ -75,9 +87,27 @@ public class GlobalWarmingImpl extends GlobalWarming {
     public int nbSafePoints(int waterLevel) {
         // TODO
         // expected time complexity O(log(n^2))
-         return -1;
+        //---> mtn on cherche juste un élément frontière entre les valeurs au dessus niv eau
+        int firstSafePoint = searchBorderSafePointWithBinarySearch(array1D,waterLevel);
+        return array1D.length - firstSafePoint;
     }
 
+    public int searchBorderSafePointWithBinarySearch(int [] array, int waterLevel){
+        int lowerIndex = 0;
+        int higherIndex = array.length-1;
+        int firstSafeIndex = array.length; //si tout est submergé
 
+        while (lowerIndex<=higherIndex){
+            int midIndex = lowerIndex + (higherIndex-lowerIndex)/2;
 
+            if(array[midIndex]>waterLevel){
+                firstSafeIndex = midIndex;
+                higherIndex = midIndex-1;
+            }
+            else{
+                lowerIndex=midIndex+1;
+            }
+        }
+        return firstSafeIndex;
+    }
 }
